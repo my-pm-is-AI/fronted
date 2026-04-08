@@ -1,10 +1,8 @@
 import BuildingFloor from './BuildingFloor';
-import OfficeRoom from './rooms/OfficeRoom';
-import LivingRoom from './rooms/LivingRoom';
-import BedroomRoom from './rooms/BedroomRoom';
+import { DevRoom, WorkshopRoom, LibraryRoom, DesignRoom, MeetingRoom } from './rooms/templates';
 import { COLORS, FLOOR_COUNT, FLOOR_SPACING, ROOM_SIZE } from './lib/constants';
 
-const ROOMS = [OfficeRoom, LivingRoom, BedroomRoom];
+const ROOMS = [DevRoom, WorkshopRoom, LibraryRoom, DesignRoom, MeetingRoom];
 
 export default function Building() {
   const half = ROOM_SIZE / 2;

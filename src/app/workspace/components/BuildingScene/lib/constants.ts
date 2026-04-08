@@ -4,7 +4,7 @@ export const ROOM_HEIGHT = 4;
 export const FLOOR_THICKNESS = 0.3;
 export const WALL_THICKNESS = 0.2;
 export const FLOOR_SPACING = ROOM_HEIGHT + FLOOR_THICKNESS; // 4.3
-export const FLOOR_COUNT = 3;
+export const FLOOR_COUNT = 5;
 
 export const COLORS = {
   background: '#0a0812',
@@ -40,8 +40,8 @@ export const COLORS = {
 
 export const CAMERA_PRESETS = {
   overview: {
-    position: [14, 16, 14] as [number, number, number],
-    target:   [0, 5.5, 0] as [number, number, number],
+    position: [18, 24, 18] as [number, number, number],
+    target:   [0, 10, 0] as [number, number, number],
   },
   // 从房间外侧前右角斜看，视线水平对准房间中心，能看到整个楼层
   floor: (i: number) => ({
@@ -51,7 +51,9 @@ export const CAMERA_PRESETS = {
 };
 
 export const FLOOR_THEMES = [
-  { label: '1F · Office',  color: '#5189fb' },
-  { label: '2F · Living',  color: '#7b2fe8' },
-  { label: '3F · Bedroom', color: '#4cc9f0' },
+  { label: '1F · Dev',      color: '#5189fb' },
+  { label: '2F · Workshop', color: '#22c55e' },
+  { label: '3F · Library',  color: '#cc44aa' },
+  { label: '4F · Design',   color: '#F05A28' },
+  { label: '5F · Meeting',  color: '#aaccff' },
 ];
