@@ -1,3 +1,53 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import Navbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import FanCards from "./components/FanCards";
+import AgentModal from "./components/AgentModal";
+import type { AgentCard } from "./components/FanCards";
+
+const GlitchLoader = dynamic(() => import("./components/GlitchLoader"), {
+  ssr: false,
+});
+
 export default function HomePage() {
-  return <div>Home Page</div>;
+  const [loading, setLoading] = useState(true);
+  const [selectedAgent, setSelectedAgent] = useState<AgentCard | null>(null);
+
+  const handleLoadComplete = useCallback(() => {
+    setLoading(false);
+  }, []);
+
+  return (
+    <div className="relative min-h-screen bg-[var(--background)]">
+      {/* 3D Glitch Loading Screen */}
+      {loading && <GlitchLoader onComplete={handleLoadComplete} />}
+
+      {/* Main Content */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loading ? 0 : 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <Navbar />
+
+        <main className="relative flex flex-col items-center overflow-x-clip">
+          {/* Ambient glow */}
+          <div className="pointer-events-none absolute top-0 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-[var(--accent)]/[0.04] blur-[120px]" />
+
+          <HeroSection />
+          <FanCards onCardClick={setSelectedAgent} />
+        </main>
+      </motion.div>
+
+      {/* Modal */}
+      <AgentModal
+        agent={selectedAgent}
+        onClose={() => setSelectedAgent(null)}
+      />
+    </div>
+  );
 }
