@@ -27,7 +27,21 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <style>{`
+          /* ── 全局自定义滚动条 ── */
+          ::-webkit-scrollbar { width: 4px; height: 4px; }
+          ::-webkit-scrollbar-track { background: transparent; }
+          ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+          ::-webkit-scrollbar-thumb:hover { background: #F05A28; }
+          ::-webkit-scrollbar-corner { background: transparent; }
+          * { scrollbar-width: thin; scrollbar-color: #2A2A2A transparent; }
+          /* 像素光标闪烁 */
+          @keyframes pixel-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+          .pixel-blink { animation: pixel-blink 1s step-end infinite; }
+        `}</style>
+      </head>
+      <body className="min-h-full flex flex-col overflow-hidden">{children}</body>
     </html>
   );
 }
