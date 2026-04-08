@@ -11,8 +11,8 @@ const BuildingScene = dynamic(() => import('./components/BuildingScene'), { ssr:
 export default function WorkspacePage() {
   return (
     <div
-      className='flex flex-col w-full h-screen overflow-hidden'
-      style={{ background: '#0A0A0A', color: '#FFFFFF' }}
+      className='flex flex-col w-full overflow-hidden'
+      style={{ background: '#0A0A0A', color: '#FFFFFF', height: 'calc(100vh - 48px)' }}
     >
       {/* ── Top Nav ── */}
       <TopNav />

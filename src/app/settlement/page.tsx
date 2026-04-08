@@ -1,3 +1,5 @@
-export default function SettlementPage() {
-  return <div>Settlement Page</div>;
+import { redirect } from 'next/navigation';
+
+export default function SettlementIndexPage() {
+  redirect('/workspace');
 }

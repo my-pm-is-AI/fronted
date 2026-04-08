@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useFrame, useThree, ThreeEvent } from '@react-three/fiber';
+import { Text, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface PixelPersonProps {
@@ -12,7 +13,11 @@ interface PixelPersonProps {
   skinColor?: string;
   phaseOffset?: number;
   scale?: number;
+  name?: string;        // 头顶名字标签
 }
+
+// mock 名字池（无 name prop 时随机取一个）
+const MOCK_NAMES = ['ALEX', 'NOVA', 'KAI', 'LUNA', 'REX', 'IVY', 'ZEN', 'ACE'];
 
 export default function PixelPerson({
   position = [0, 0, 0],
@@ -23,7 +28,10 @@ export default function PixelPerson({
   skinColor  = '#f5cba7',
   phaseOffset = 0,
   scale = 1.85,
+  name,
 }: PixelPersonProps) {
+  // 稳定的 mock 名字：用 phaseOffset 当 seed 取一个固定名
+  const displayName = name ?? MOCK_NAMES[Math.floor(Math.abs(phaseOffset * 3.7)) % MOCK_NAMES.length];
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
   const [facingCamera, setFacingCamera] = useState(false);
@@ -127,6 +135,33 @@ export default function PixelPerson({
           <meshStandardMaterial color={shirtColor} emissive={shirtColor} emissiveIntensity={1.5} transparent opacity={0.6} />
         </mesh>
       )}
+
+      {/* ── 头顶名字标签（Billboard 始终面向相机）── */}
+      <Billboard position={[0, hairY + hairH + 0.18 * scale, 0]}>
+        {/* 背景底板 */}
+        <mesh>
+          <planeGeometry args={[0.52 * scale, 0.14 * scale]} />
+          <meshBasicMaterial color='#000000' transparent opacity={0.55} />
+        </mesh>
+        {/* 左侧职能色竖条 */}
+        <mesh position={[-(0.52 * scale / 2) + 0.018 * scale, 0, 0.001]}>
+          <planeGeometry args={[0.03 * scale, 0.14 * scale]} />
+          <meshBasicMaterial color={shirtColor} />
+        </mesh>
+        {/* 名字文字 */}
+        <Text
+          position={[0.01 * scale, 0, 0.002]}
+          fontSize={0.09 * scale}
+          color='#ffffff'
+          anchorX='center'
+          anchorY='middle'
+          letterSpacing={0.1}
+          outlineWidth={0.006 * scale}
+          outlineColor='#000000'
+        >
+          {displayName}
+        </Text>
+      </Billboard>
     </group>
   );
 }

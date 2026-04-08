@@ -20,6 +20,58 @@ function PixelRobotAvatar({ size = 24 }: { size?: number }) {
   );
 }
 
+function SendButton({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+
+  // blogNow 风格硬偏移阴影
+  const shadow = pressed ? 'none' : hovered ? '6px 6px 0 #000' : '3px 3px 0 #000';
+  const transform = pressed ? 'translate(3px,3px)' : hovered ? 'translate(-3px,-3px)' : 'none';
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        background: '#F05A28',
+        color: hovered && !pressed ? '#000' : '#fff',
+        fontSize: 11,
+        borderRadius: 0,
+        border: '2px solid #000',
+        letterSpacing: '0.1em',
+        padding: '0 18px',
+        boxShadow: shadow,
+        transform,
+        transition: 'transform 0.12s ease, box-shadow 0.12s ease, color 0.12s',
+        cursor: 'pointer',
+        fontFamily: 'Archivo Black, sans-serif',
+        textTransform: 'uppercase',
+        userSelect: 'none',
+      }}
+    >
+      {/* blogNow 风格：白色从左往右填入 */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#fff',
+          transform: hovered && !pressed ? 'scaleX(1)' : 'scaleX(0)',
+          transformOrigin: 'left center',
+          transition: 'transform 0.25s ease-out',
+          zIndex: 0,
+        }}
+      />
+      <span style={{ position: 'relative', zIndex: 1 }}>SEND</span>
+    </button>
+  );
+}
+
 interface Message { id: number; role: 'user' | 'agent'; content: string; time: string; }
 
 const MOCK_MESSAGES: Message[] = [
@@ -154,13 +206,7 @@ export default function AgentChat() {
               borderRadius: 0,
             }}
           />
-          <button
-            onClick={handleSend}
-            className='font-display text-xs px-4 py-2.5 transition-all duration-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none'
-            style={{ background: '#F05A28', color: '#fff', fontSize: 11, borderRadius: 0, border: '2px solid #F05A28', letterSpacing: '0.1em', boxShadow: '3px 3px 0 #000' }}
-          >
-            SEND
-          </button>
+          <SendButton onClick={handleSend} />
         </div>
       </div>
     </div>

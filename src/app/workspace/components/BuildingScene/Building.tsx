@@ -1,14 +1,36 @@
+import { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import BuildingFloor from './BuildingFloor';
 import { DevRoom, WorkshopRoom, LibraryRoom, DesignRoom, MeetingRoom } from './rooms/templates';
 import { COLORS, FLOOR_COUNT, FLOOR_SPACING, ROOM_SIZE } from './lib/constants';
 
 const ROOMS = [DevRoom, WorkshopRoom, LibraryRoom, DesignRoom, MeetingRoom];
 
+// 弹性缓动：从下方升起，带轻微弹跳感
+function easeOutBack(t: number): number {
+  const c1 = 1.4;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
 export default function Building() {
   const half = ROOM_SIZE / 2;
+  const groupRef = useRef<THREE.Group>(null);
+  const progress = useRef(0);   // 0 → 1
+  const START_Y = -22;          // 初始 Y（从地下升起）
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    if (progress.current >= 1) return;
+    // 约 1.6s 完成动画
+    progress.current = Math.min(1, progress.current + delta * 0.65);
+    const easedY = THREE.MathUtils.lerp(START_Y, 0, easeOutBack(progress.current));
+    groupRef.current.position.y = easedY;
+  });
 
   return (
-    <group>
+    <group ref={groupRef} position={[0, START_Y, 0]}>
       {Array.from({ length: FLOOR_COUNT }, (_, i) => {
         const Room = ROOMS[i];
         return (
