@@ -7,6 +7,12 @@
   to   { transform: rotateX(35deg) translateY(-320%); }
 }
 
+@layer utilities {
+  .animate-scroll-text {
+    animation: scrollText 5.5s linear infinite;
+  }
+}
+
 :root {
   --background: #000000;
   --foreground: #ffffff;

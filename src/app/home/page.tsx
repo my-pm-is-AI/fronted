@@ -86,9 +86,9 @@ export default function HomePage() {
             >
               {/* duplicate lines so loop feels seamless */}
               <div
+                className="animate-scroll-text"
                 style={{
                   transformOrigin: "50% 100%",
-                  animation: "scrollText 5.5s linear infinite",
                   textAlign: "center",
                   paddingTop: "20px",
                 }}
