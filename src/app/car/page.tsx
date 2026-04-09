@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import type * as THREE from 'three';
 
 export default function CarPage() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -12,7 +13,7 @@ export default function CarPage() {
     let cleanupFn: (() => void) | undefined;
 
     // 动态 import three + 后处理，避免 SSR
-    async function init() {
+    async function init(mount: HTMLDivElement) {
       const THREE = await import('three');
       const { EffectComposer } = await import('three/examples/jsm/postprocessing/EffectComposer.js');
       const { RenderPass } = await import('three/examples/jsm/postprocessing/RenderPass.js');
@@ -320,8 +321,8 @@ export default function CarPage() {
           }
         });
         composer.passes.forEach((pass) => {
-          if ((pass as ShaderPass).uniforms?.uTime) {
-            (pass as ShaderPass).uniforms.uTime.value = t % 10;
+          if ((pass as any).uniforms?.uTime) {
+            (pass as any).uniforms.uTime.value = t % 10;
           }
         });
 
@@ -351,7 +352,7 @@ export default function CarPage() {
       };
     }
 
-    init().catch(console.error);
+    init(mount).catch(console.error);
     return () => cleanupFn?.();
   }, []);
 
