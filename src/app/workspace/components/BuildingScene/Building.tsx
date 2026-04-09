@@ -14,11 +14,19 @@ function easeOutBack(t: number): number {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
-export default function Building() {
+interface BuildingProps {
+  focusedFloor?: number | null;
+  isTransitioning?: boolean;
+  members?: any[];
+}
+
+export default function Building({ focusedFloor = null, isTransitioning = false, members = [] }: BuildingProps) {
   const half = ROOM_SIZE / 2;
   const groupRef = useRef<THREE.Group>(null);
   const progress = useRef(0);   // 0 → 1
   const START_Y = -22;          // 初始 Y（从地下升起）
+
+  const actualFloorCount = members && members.length > 0 ? members.length : FLOOR_COUNT;
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -31,10 +39,40 @@ export default function Building() {
 
   return (
     <group ref={groupRef} position={[0, START_Y, 0]}>
-      {Array.from({ length: FLOOR_COUNT }, (_, i) => {
-        const Room = ROOMS[i];
+      {Array.from({ length: actualFloorCount }, (_, i) => {
+        let Room = ROOMS[i % ROOMS.length];
+        let title = `Floor ${i + 1}`;
+        let personName = `Agent_${i + 1}`;
+        
+        if (members && members.length > 0) {
+          const member = members[i];
+          if (member) {
+            title = member.role || `Floor ${i + 1}`;
+            personName = member.name || `Agent_${i + 1}`;
+            if (member.role.toLowerCase().includes('开发') || member.role.toLowerCase().includes('dev')) Room = DevRoom;
+            else if (member.role.toLowerCase().includes('设计') || member.role.toLowerCase().includes('ui')) Room = DesignRoom;
+            else if (member.role.toLowerCase().includes('产品') || member.role.toLowerCase().includes('pm')) Room = MeetingRoom;
+            else Room = WorkshopRoom;
+          }
+        } else {
+          if (i === 0) { Room = DevRoom; title = 'Dev Team'; }
+          else if (i === 1) { Room = DesignRoom; title = 'Design Studio'; }
+          else if (i === 2) { Room = WorkshopRoom; title = 'Hardware Lab'; }
+          else { Room = MeetingRoom; title = 'War Room'; }
+        }
+
+        const isFocused = focusedFloor === i;
+        const isDimmed = focusedFloor !== null && focusedFloor !== i && !isTransitioning;
+
         return (
-          <BuildingFloor key={i} floorIndex={i}>
+          <BuildingFloor 
+            key={i} 
+            floorIndex={i}
+            title={title}
+            personName={personName}
+            isFocused={isFocused}
+            isDimmed={isDimmed}
+          >
             <Room />
           </BuildingFloor>
         );
@@ -54,7 +92,7 @@ export default function Building() {
       </mesh>
       {/* Roof parapet */}
       {(() => {
-        const topY = FLOOR_COUNT * FLOOR_SPACING + 0.08;
+        const topY = actualFloorCount * FLOOR_SPACING + 0.08;
         return (
           <group position={[0, topY, 0]}>
             <mesh position={[0, 0.18, half]}>

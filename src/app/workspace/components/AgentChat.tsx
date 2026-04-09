@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 
-function PixelRobotAvatar({ size = 24 }: { size?: number }) {
+function PixelRobotAvatar({ size = 24, isUser = false }: { size?: number, isUser?: boolean }) {
   const px = size / 7;
   const grid = [
     [2, 5, 1, 1, 5, 2],
@@ -12,7 +12,7 @@ function PixelRobotAvatar({ size = 24 }: { size?: number }) {
     [2, 1, 1, 1, 1, 2],
     [2, 2, 1, 1, 2, 2],
   ];
-  const COLOR: Record<number, string> = { 1: '#2a1f1a', 2: 'transparent', 3: '#F05A28', 4: '#FF7A4A', 5: '#7b2fe8' };
+  const COLOR: Record<number, string> = { 1: '#2a1f1a', 2: 'transparent', 3: isUser ? '#22c55e' : '#F05A28', 4: isUser ? '#4ade80' : '#FF7A4A', 5: '#7b2fe8' };
   return (
     <div style={{ width: size, height: size, display: 'grid', gridTemplateColumns: `repeat(6, ${px}px)`, gridTemplateRows: `repeat(7, ${px}px)`, imageRendering: 'pixelated' }}>
       {grid.flat().map((v, i) => <div key={i} style={{ background: COLOR[v], width: px, height: px }} />)}
@@ -72,33 +72,221 @@ function SendButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-interface Message { id: number; role: 'user' | 'agent'; content: string; time: string; }
+interface Message { id: number; role: 'user' | 'agent'; content: string; time: string; isFile?: boolean; }
 
-const MOCK_MESSAGES: Message[] = [
-  { id: 1, role: 'agent', content: '你好！我是你的 AI Agent，已准备就绪。请告诉我你的 Hackathon 项目需求。', time: '13:20' },
-  { id: 2, role: 'user', content: '我需要构建一个 AI 驱动的多人协作 Workspace，展示每个人的 Agent 进度。', time: '13:21' },
-  { id: 3, role: 'agent', content: '明白！这是一个很有趣的项目。建议分以下几个阶段推进：\n\n1. 搭建基础布局框架\n2. 集成 3D 霓虹建筑展示\n3. 实现 Agent 对话功能\n4. 添加团队进度面板', time: '13:21' },
-  { id: 4, role: 'user', content: '3D 展示用的是 myself2 的代码，设计风格需要对齐 DESIGN_STYLE.md', time: '13:22' },
-  { id: 5, role: 'agent', content: '已分析 myself2 代码结构和设计风格文档。将采用：\n\n• 深炭黑底色 #0A0A0A\n• 橙色强调 #F05A28\n• 霓虹蓝紫 3D 建筑继承 myself2\n• Glitch 标题动效\n\n正在执行 Phase 1...', time: '13:22' },
-];
+const MOCK_MESSAGES: Message[] = [];
 
 export default function AgentChat() {
   const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 模拟从后端获取 todo list 和 agent 跨 agent 消息
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const token = localStorage.getItem('token') || '';
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        
+        // 我们从URL里获取 project_id，这里简化处理写死或者假设在上下文中
+        const projectIdStr = window.location.pathname.split('/').pop();
+        const projectId = projectIdStr ? parseInt(projectIdStr, 10) : 1;
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        
+        const initialMsgs: Message[] = [];
+        
+        // 尝试从后端获取真实的 todo list
+        try {
+          const res = await fetch(`${apiUrl}/api/v1/project/${projectId}/tasks`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const todos = data.data?.todos || [];
+            const members = data.data?.members || [];
+            
+            const isOwner = data.data?.is_owner;
+            
+            let todoText = '';
+            if (todos.length > 0) {
+              todoText = todos.map((t: any) => `[${t.status === 'done' ? 'x' : ' '}] ${t.content} (分配给: ${t.role}, 截止: ${t.deadline})`).join('\n');
+            } else {
+              todoText = '[ ] 暂无任务\n[ ] 等待分配';
+            }
+
+            if (isOwner) {
+              initialMsgs.push({
+                id: Date.now(),
+                role: 'agent',
+                content: `欢迎回来，项目发起人 ${user?.username || ''}。\n当前项目已完成任务拆解。您的团队正在努力工作中。目前团队的整体任务如下：\n\n${todoText}\n\n您可以在此监督进度、上传参考资料或解答团队成员的问题。`,
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+              });
+            } else {
+              initialMsgs.push({
+                id: Date.now(),
+                role: 'agent',
+                content: `欢迎回来，${user?.username || '用户'}。我已根据当前项目的需求文档为你拆解了以下 Todo List：\n\n${todoText}\n\n请尽快处理，你可以随时向我上传交付物文件。`,
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+              });
+            }
+          }
+        } catch {
+          // 降级 mock
+          initialMsgs.push({
+            id: Date.now(),
+            role: 'agent',
+            content: `欢迎回来，${user?.username || '用户'}。我已根据当前进度为你整理了今日的 Todo List：\n\n[ ] 完成前端登录页切图\n[ ] 对接 /api/v1/auth/login 接口\n\n请尽快处理，你可以随时向我上传交付物文件。`,
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+        
+        setMessages(initialMsgs);
+
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const handleSend = () => {
+  // 监听 3D 场景中点击 Agent 的事件
+  useEffect(() => {
+    const handleAgentClicked = (e: any) => {
+      const agentName = e.detail.agentName;
+      if (!agentName) return;
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          role: 'user',
+          content: `你现在的进度怎么样了？遇到什么问题了吗？ (@${agentName})`,
+          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+      setIsTyping(true);
+
+      setTimeout(() => {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            role: 'agent',
+            content: `你好！我是 ${agentName}。我目前的进度一切正常，已经完成了 80% 的任务分配。\n目前暂时没有遇到阻塞问题，正在继续执行...`,
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+        setIsTyping(false);
+      }, 1500);
+    };
+
+    window.addEventListener('AGENT_CLICKED', handleAgentClicked);
+    return () => window.removeEventListener('AGENT_CLICKED', handleAgentClicked);
+  }, []);
+
+  const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg: Message = { id: Date.now(), role: 'user', content: input.trim(), time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
-    setTimeout(() => {
-      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'agent', content: '收到！正在处理你的请求，稍候给出执行方案...', time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }]);
+    
+    // 调用后端对话接口
+    try {
+      const token = localStorage.getItem('token') || '';
+      const projectIdStr = window.location.pathname.split('/').pop();
+      const projectId = projectIdStr ? parseInt(projectIdStr, 10) : 1;
+      // 假设 member_id 为 1
+      const memberId = 1; 
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${apiUrl}/api/v1/project/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ project_id: projectId, member_id: memberId, message: userMsg.content }),
+      });
+
+      if (!res.ok || !res.body) throw new Error('SSE failed');
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      const id = Date.now() + 1;
+      setMessages(prev => [...prev, { id, role: 'agent', content: '', time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }]);
+      let full = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(l => l.trim().startsWith('data:'));
+        for (const line of lines) {
+          try {
+            const dataStr = line.replace(/^data:\s*/, '').trim();
+            if (dataStr === '[DONE]') continue;
+            const data = JSON.parse(dataStr);
+            const token = data.content ?? data.text ?? data.delta ?? '';
+            if (token) {
+              full += token;
+              setMessages(prev => prev.map(m => m.id === id ? { ...m, content: full } : m));
+            }
+          } catch { /* skip */ }
+        }
+      }
       setIsTyping(false);
-    }, 1200);
+    } catch {
+      // 降级 mock
+      setTimeout(() => {
+        setMessages(prev => [...prev, { id: Date.now() + 1, role: 'agent', content: '收到！正在处理你的请求，稍候给出执行方案...', time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }]);
+        setIsTyping(false);
+      }, 1200);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // 显示用户发送了文件
+    const userMsg: Message = { 
+      id: Date.now(), 
+      role: 'user', 
+      content: `📎 附件已上传: ${file.name}`, 
+      time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      isFile: true
+    };
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+
+    // 延迟模拟响应
+    setTimeout(() => {
+      // 假设：简单的判断是否是需求方（这里通过 localStorage mock 判断，或者随机）
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const isOwner = user?.username === 'Fred' || user?.username === 'admin'; // mock 判断
+
+      const replyContent = isOwner 
+        ? '已将你的材料发放给协作者。' 
+        : '已收到结果，正通知需求方验收。';
+
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        role: 'agent', 
+        content: replyContent, 
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) 
+      }]);
+      setIsTyping(false);
+      
+      // 清空 input 使得可以重复上传相同文件
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }, 1500);
   };
 
   return (
@@ -185,8 +373,21 @@ export default function AgentChat() {
         className='px-3 py-3 shrink-0'
         style={{ borderTop: '2px solid #000', background: '#fff' }}
       >
-        <p className='font-mono-brand text-[9px] mb-1.5 px-1' style={{ color: 'rgba(0,0,0,0.35)', letterSpacing: '0.15em' }}>
-          &gt; INPUT COMMAND
+        <p className='font-mono-brand text-[9px] mb-1.5 px-1 flex justify-between' style={{ color: 'rgba(0,0,0,0.35)', letterSpacing: '0.15em' }}>
+          <span>&gt; INPUT COMMAND</span>
+          {/* 隐藏的文件输入框 */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            style={{ display: 'none' }} 
+            onChange={handleFileUpload} 
+          />
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            style={{ textDecoration: 'underline', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+          >
+            [UPLOAD FILE]
+          </button>
         </p>
         <div className='flex gap-0'>
           <input

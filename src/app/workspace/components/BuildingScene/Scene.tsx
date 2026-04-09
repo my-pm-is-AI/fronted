@@ -13,9 +13,10 @@ interface SceneProps {
   focusedFloor: number | null;
   autoRotate: boolean;
   bloomEnabled: boolean;
+  members: any[];
 }
 
-export default function Scene({ focusedFloor, autoRotate, bloomEnabled }: SceneProps) {
+export default function Scene({ focusedFloor, autoRotate, bloomEnabled, members }: SceneProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const { camera } = useThree();
 
@@ -78,7 +79,7 @@ export default function Scene({ focusedFloor, autoRotate, bloomEnabled }: SceneP
       <pointLight color='#4466cc' intensity={2} distance={12} position={[0, 10.6, 0]} />
       <pointLight color={COLORS.neonPurple} intensity={0.8} distance={20} position={[-8, 8, -8]} />
       <Stars radius={80} depth={60} count={2000} factor={3} fade speed={0.5} />
-      <Building />
+      <Building members={members} />
       <PostProcessing bloomEnabled={bloomEnabled} />
     </>
   );

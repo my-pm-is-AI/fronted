@@ -124,7 +124,7 @@ export default function GlitchLoader({ onComplete }: GlitchLoaderProps) {
               }}
               aria-hidden
             >
-              别问我，问Agent
+              别问我，问CoAgent
             </h1>
             <h1
               className="absolute inset-0 text-center text-5xl font-black tracking-[-0.02em] text-white opacity-70 md:text-7xl"

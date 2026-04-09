@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgentOS — AI 协作平台",
+  title: "CoAgent — AI 协作平台",
   description: "AI Agent 驱动的多人协作工作台",
 };
 

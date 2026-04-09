@@ -100,7 +100,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                   {agent.role}
                 </span>
 
-                {/* 协作 Agent 标签 */}
+                {/* Sub-label */}
                 <p style={{
                   marginTop: 10,
                   fontSize: 11,
@@ -109,7 +109,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                   letterSpacing: "0.15em",
                   color: "rgba(255,255,255,0.28)",
                 }}>
-                  协作 Agent
+                  {agent.subRole}
                 </p>
               </motion.div>
 
@@ -190,7 +190,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                   marginBottom: 22,
                   fontWeight: 700,
                 }}>
-                  协作 Agent
+                  {agent.subRole}
                 </span>
 
                 {/* Description — 白色无衬线 */}

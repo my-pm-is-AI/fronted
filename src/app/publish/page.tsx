@@ -16,6 +16,31 @@ interface PublishStep {
   status: 'pending' | 'loading' | 'done' | 'error';
 }
 
+interface MatchedAgent {
+  name: string;
+  profession: string;
+  skills: string[];
+}
+
+function PixelRobotAvatar({ size = 24 }: { size?: number }) {
+  const px = size / 7;
+  const grid = [
+    [2, 5, 1, 1, 5, 2],
+    [2, 1, 1, 1, 1, 2],
+    [1, 1, 3, 3, 1, 1],
+    [1, 1, 3, 3, 1, 1],
+    [2, 1, 4, 4, 1, 2],
+    [2, 1, 1, 1, 1, 2],
+    [2, 2, 1, 1, 2, 2],
+  ];
+  const COLOR: Record<number, string> = { 1: '#2a1f1a', 2: 'transparent', 3: '#F05A28', 4: '#FF7A4A', 5: '#7b2fe8' };
+  return (
+    <div style={{ width: size, height: size, display: 'grid', gridTemplateColumns: `repeat(6, ${px}px)`, gridTemplateRows: `repeat(7, ${px}px)`, imageRendering: 'pixelated' }}>
+      {grid.flat().map((v, i) => <div key={i} style={{ background: COLOR[v], width: px, height: px }} />)}
+    </div>
+  );
+}
+
 // ─── Pixel Robot Avatar ──────────────────────────────────
 function PixelRobot({ size = 32 }: { size?: number }) {
   const grid = [
@@ -90,11 +115,13 @@ export default function PublishPage() {
     },
   ]);
   const [input, setInput] = useState('');
-  const [draft, setDraft] = useState({ title: '', prd: '' });
+  const [draft, setDraft] = useState({ title: '', prd: '', budget: 0 });
   const [isTyping, setIsTyping] = useState(false);
   const [convId] = useState(() => `conv_${Date.now()}`);
   const [publishing, setPublishing] = useState(false);
   const [steps, setSteps] = useState<PublishStep[]>([]);
+  const [matchedAgents, setMatchedAgents] = useState<MatchedAgent[]>([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(1);
 
@@ -122,14 +149,27 @@ export default function PublishPage() {
     if (!input.trim() || isTyping) return;
     const userMsg = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { id: msgIdRef.current++, role: 'user', content: userMsg }]);
+    
+    // Create new messages array including the user's new message
+    const newMessages = [...messages, { id: msgIdRef.current++, role: 'user' as const, content: userMsg }];
+    setMessages(newMessages);
     setIsTyping(true);
 
+    // Filter out typing messages and format history for backend
+    const history = newMessages
+      .filter(m => !m.typing)
+      .map(m => ({ role: m.role === 'ai' ? 'assistant' : m.role, content: m.content }));
+
     try {
-      const res = await fetch('http://120.78.126.163/api/v1/requirement/chat', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${apiUrl}/api/v1/requirement/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token') || ''}` },
-        body: JSON.stringify({ message: userMsg, conversation_id: convId }),
+        body: JSON.stringify({ 
+          message: userMsg, 
+          conversation_id: convId ? Number(convId.split('_')[1]) : undefined,
+          history: history 
+        }),
       });
 
       if (!res.ok || !res.body) throw new Error('SSE failed');
@@ -143,17 +183,24 @@ export default function PublishPage() {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(l => l.startsWith('data:'));
+        const lines = chunk.split('\n').filter(l => l.trim().startsWith('data:'));
         for (const line of lines) {
           try {
-            const data = JSON.parse(line.slice(5));
+            const dataStr = line.replace(/^data:\s*/, '').trim();
+            if (dataStr === '[DONE]') continue;
+            
+            const data = JSON.parse(dataStr);
             const token = data.content ?? data.text ?? data.delta ?? '';
             if (token) {
               full += token;
               setMessages(prev => prev.map(m => m.id === id ? { ...m, content: full } : m));
-              if (full.includes('标题') || full.includes('需求')) {
-                const titleMatch = full.match(/(?:项目名称|标题)[：:]\s*(.+)/);
+              if (full.includes('标题') || full.includes('需求') || full.includes('预算')) {
+                const titleMatch = full.match(/(?:项目名称|标题)[：:]\s*([^\n]+)/);
                 if (titleMatch) setDraft(d => ({ ...d, title: titleMatch[1].trim() }));
+                
+                const budgetMatch = full.match(/(?:预算)[：:]\s*(\d+)/);
+                if (budgetMatch) setDraft(d => ({ ...d, budget: parseInt(budgetMatch[1], 10) }));
+                
                 setDraft(d => ({ ...d, prd: full }));
               }
             }
@@ -169,7 +216,7 @@ export default function PublishPage() {
         '完美！PRD 已经整理好了。你可以在右侧预览并编辑，满意后点击「发布项目」。',
       ];
       const reply = mockReplies[Math.min(messages.filter(m => m.role === 'user').length, mockReplies.length - 1)];
-      setDraft({ title: userMsg.slice(0, 30), prd: `# ${userMsg.slice(0, 30)}\n\n## 项目概述\n${userMsg}\n\n## 核心功能\n- 功能 A\n- 功能 B\n- 功能 C\n\n## 技术要求\n- 前端：React + TypeScript\n- 后端：Python FastAPI\n- 数据库：PostgreSQL` });
+      setDraft({ title: userMsg.slice(0, 30), prd: `# ${userMsg.slice(0, 30)}\n\n## 项目概述\n${userMsg}\n\n## 核心功能\n- 功能 A\n- 功能 B\n- 功能 C\n\n## 技术要求\n- 前端：React + TypeScript\n- 后端：Python FastAPI\n- 数据库：PostgreSQL`, budget: 0 });
       typeMessage(reply);
     }
   };
@@ -177,51 +224,84 @@ export default function PublishPage() {
   const handlePublish = async () => {
     if (!draft.title || !draft.prd) return;
     setPublishing(true);
+    setMatchedAgents([]);
+    setCurrentStepIndex(0);
+
     const initSteps: PublishStep[] = [
-      { key: 'create', label: '创建需求文档', status: 'loading' },
-      { key: 'match',  label: '匹配 AI Agent 团队', status: 'pending' },
-      { key: 'assign', label: '分配任务清单', status: 'pending' },
+      { key: 'create', label: '1. 创建项目记录与PRD解析', status: 'loading' },
+      { key: 'match',  label: '2. 从全球网络搜索匹配协作者', status: 'pending' },
+      { key: 'assign', label: '3. 协作者在线会议分配任务', status: 'pending' },
     ];
     setSteps(initSteps);
 
     const token = localStorage.getItem('token') || '';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     let projectId = 1;
 
     try {
-      const r = await fetch('http://120.78.126.163/api/v1/requirement/create', {
+      const r = await fetch(`${apiUrl}/api/v1/requirement/create`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title: draft.title, prd: draft.prd }),
+        body: JSON.stringify({ title: draft.title, prd: draft.prd, budget: draft.budget }),
       });
+      if (!r.ok) {
+        throw new Error('Create failed');
+      }
       const data = await r.json();
       projectId = data.project_id ?? data.data?.project_id ?? projectId;
       setSteps(s => s.map(x => x.key === 'create' ? { ...x, status: 'done' } : x.key === 'match' ? { ...x, status: 'loading' } : x));
+      setCurrentStepIndex(1);
     } catch {
-      setSteps(s => s.map(x => x.key === 'create' ? { ...x, status: 'done' } : x.key === 'match' ? { ...x, status: 'loading' } : x));
+      setSteps(s => s.map(x => x.key === 'create' ? { ...x, status: 'error' } : x));
+      return;
     }
 
     await new Promise(r => setTimeout(r, 800));
 
     try {
-      await fetch('http://120.78.126.163/api/v1/project/match-agents', {
+      const matchRes = await fetch(`${apiUrl}/api/v1/project/match-agents`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ project_id: projectId }),
       });
+      if (!matchRes.ok) {
+        throw new Error('Match failed');
+      }
+      const matchData = await matchRes.json();
+      const agents = matchData.data?.matched_agents || [];
+      
+      // 模拟一个一个搜寻到的过程
+      for (let i = 0; i < agents.length; i++) {
+        await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); // 模拟不同速度出现
+        setMatchedAgents(prev => [...prev, agents[i]]);
+      }
+      
+      await new Promise(r => setTimeout(r, 1000));
       setSteps(s => s.map(x => x.key === 'match' ? { ...x, status: 'done' } : x.key === 'assign' ? { ...x, status: 'loading' } : x));
+      setCurrentStepIndex(2);
     } catch {
-      setSteps(s => s.map(x => x.key === 'match' ? { ...x, status: 'done' } : x.key === 'assign' ? { ...x, status: 'loading' } : x));
+      setSteps(s => s.map(x => x.key === 'match' ? { ...x, status: 'error' } : x));
+      return;
     }
 
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 500));
 
     try {
-      await fetch('http://120.78.126.163/api/v1/project/assign-tasks', {
+      const assignRes = await fetch(`${apiUrl}/api/v1/project/assign-tasks`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ project_id: projectId }),
       });
-    } catch { /* ignore */ }
-    setSteps(s => s.map(x => x.key === 'assign' ? { ...x, status: 'done' } : x));
+      if (!assignRes.ok) {
+        throw new Error('Assign failed');
+      }
+      // 模拟会议开了一会
+      await new Promise(r => setTimeout(r, 1500));
+      setSteps(s => s.map(x => x.key === 'assign' ? { ...x, status: 'done' } : x));
+      setCurrentStepIndex(3);
+    } catch {
+      setSteps(s => s.map(x => x.key === 'assign' ? { ...x, status: 'error' } : x));
+      return;
+    }
 
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise(r => setTimeout(r, 1000));
     router.push(`/workspace/${projectId}`);
   };
 
@@ -340,32 +420,90 @@ export default function PublishPage() {
             </div>
 
             {/* Publish / Steps */}
-            {!publishing ? (
-              <OrangeButton onClick={handlePublish} disabled={!draft.title || !draft.prd} fullWidth>
-                ✦ 发布项目
-              </OrangeButton>
-            ) : (
-              <div style={{ border: '2px solid rgba(255,255,255,0.12)', padding: '20px' }}>
-                {steps.map((step, i) => (
-                  <div key={step.key} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: i < steps.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
-                    <div style={{ width: 22, height: 22, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {step.status === 'done'    && <span style={{ color: '#22c55e', fontSize: 16 }}>✓</span>}
-                      {step.status === 'loading' && <span className='pixel-blink' style={{ color: '#F05A28', fontSize: 12 }}>█</span>}
-                      {step.status === 'pending' && <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>○</span>}
-                    </div>
-                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: step.status === 'done' ? '#22c55e' : step.status === 'loading' ? '#F05A28' : 'rgba(255,255,255,0.2)', letterSpacing: '0.08em' }}>
-                      {step.label}
-                    </span>
-                    <div style={{ flex: 1, height: 3, background: 'rgba(255,255,255,0.06)' }}>
-                      <div style={{ height: '100%', background: step.status === 'done' ? '#22c55e' : step.status === 'loading' ? '#F05A28' : 'transparent', boxShadow: step.status === 'loading' ? '0 0 8px #F05A28' : step.status === 'done' ? '0 0 8px #22c55e88' : 'none', width: step.status === 'done' ? '100%' : step.status === 'loading' ? '60%' : '0%', transition: 'width 0.5s ease' }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <OrangeButton onClick={handlePublish} disabled={!draft.title || !draft.prd} fullWidth>
+              ✦ 发布项目
+            </OrangeButton>
           </div>
         </div>
       </div>
+
+      {publishing && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center' style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(10px)' }}>
+          <div className='w-full max-w-4xl p-8 flex flex-col md:flex-row gap-12'>
+            {/* Left: Status Steps */}
+            <div className='w-full md:w-1/3 flex flex-col gap-6'>
+              <h2 className='font-display text-2xl mb-4' style={{ color: '#F05A28' }}>SYSTEM_BOOT</h2>
+              {steps.map(step => (
+                <div key={step.key} className='flex items-start gap-4'>
+                  <div className='mt-1 shrink-0'>
+                    {step.status === 'done' ? (
+                      <span style={{ color: '#22c55e' }}>[✓]</span>
+                    ) : step.status === 'loading' ? (
+                      <span className='pixel-blink' style={{ color: '#F05A28' }}>[▌]</span>
+                    ) : step.status === 'error' ? (
+                      <span style={{ color: '#ef4444' }}>[✗]</span>
+                    ) : (
+                      <span style={{ color: 'rgba(255,255,255,0.3)' }}>[ ]</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className='font-display text-sm' style={{ color: step.status === 'pending' ? 'rgba(255,255,255,0.3)' : '#fff' }}>
+                      {step.label}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right: Agents & Meeting View */}
+            <div className='w-full md:w-2/3 flex flex-col gap-4' style={{ minHeight: '300px' }}>
+              {currentStepIndex >= 1 && (
+                <div className='flex-1 border-2 border-gray-800 p-6 bg-black relative overflow-hidden'>
+                  {/* Grid background */}
+                  <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '20px 20px', zIndex: 0 }} />
+                  
+                  <div className='relative z-10 flex flex-col h-full'>
+                    <h3 className='font-mono-brand text-xs mb-6' style={{ color: '#F05A28', letterSpacing: '0.1em' }}>
+                      &gt; {currentStepIndex === 1 ? 'SEARCHING_GLOBAL_NETWORK...' : 'INITIALIZING_KICKOFF_MEETING...'}
+                    </h3>
+                    
+                    <div className='flex flex-wrap gap-4 items-center justify-center flex-1'>
+                      {matchedAgents.map((agent, i) => (
+                        <div 
+                          key={i} 
+                          className='flex flex-col items-center gap-2 animate-in fade-in zoom-in duration-500'
+                          style={{ animationDelay: `${i * 100}ms` }}
+                        >
+                          <div className='w-16 h-16 border-2 border-[#F05A28] bg-[#111] flex items-center justify-center shadow-[4px_4px_0_#F05A28]'>
+                            <PixelRobotAvatar size={40} />
+                          </div>
+                          <div className='text-center'>
+                            <p className='font-display text-sm' style={{ color: '#fff' }}>{agent.name}</p>
+                            <p className='font-mono-brand text-[9px]' style={{ color: '#F05A28' }}>{agent.profession}</p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {currentStepIndex === 1 && matchedAgents.length < 4 && (
+                        <div className='w-16 h-16 border-2 border-dashed border-gray-600 rounded-full animate-spin-slow opacity-50 flex items-center justify-center' />
+                      )}
+                    </div>
+                    
+                    {currentStepIndex >= 2 && (
+                      <div className='mt-8 p-4 border border-gray-800 bg-[#111] text-xs font-mono-brand' style={{ color: '#4ade80' }}>
+                        <p className='pixel-blink mb-2'>&gt; CONNECTION ESTABLISHED</p>
+                        <p>&gt; SYNCING PRD CONTEXT...</p>
+                        <p>&gt; DECONSTRUCTING TASKS...</p>
+                        <p>&gt; ASSIGNING TO DO LISTS...</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

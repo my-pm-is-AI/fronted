@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
-import FanCards from "./components/FanCards";
 import AgentModal from "./components/AgentModal";
 import type { AgentCard } from "./components/FanCards";
 
@@ -37,8 +36,7 @@ export default function HomePage() {
         <main className="relative flex flex-col items-center overflow-x-clip">
           {/* Ambient glow — removed for pure black */}
 
-          <HeroSection />
-          <FanCards onCardClick={setSelectedAgent} paused={selectedAgent !== null} />
+          <HeroSection onCardClick={setSelectedAgent} paused={selectedAgent !== null} />
         </main>
       </motion.div>
 

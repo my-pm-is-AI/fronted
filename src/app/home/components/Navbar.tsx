@@ -29,7 +29,7 @@ export default function Navbar() {
           <span className="text-sm font-bold text-white">A</span>
         </div>
         <span className="text-lg tracking-tight text-white" style={{ fontFamily: "'Archivo Black', sans-serif" }}>
-          别问我，问Agent
+          别问我，问CoAgent！
         </span>
       </div>
 
