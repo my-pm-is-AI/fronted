@@ -21,6 +21,7 @@ interface AgentAppearance {
 
 interface MeetingRoomProps {
   agents?: AgentAppearance[];
+  agentName?: string;
 }
 
 // 像素人站在地板上（y=0），位置在桌旁两侧

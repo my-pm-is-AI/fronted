@@ -22,10 +22,12 @@ interface AgentAppearance {
   shirtColor?: string;
   pantsColor?: string;
   skinColor?: string;
+  name?: string;
 }
 
 interface WorkshopRoomProps {
   agents?: AgentAppearance[];
+  agentName?: string;
 }
 
 const AGENT_SLOTS = [
