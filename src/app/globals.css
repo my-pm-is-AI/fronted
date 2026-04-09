@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --brand: #F05A28;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Inter', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Text Selection ── */
+::selection      { background: #000000; color: #F05A28; }
+::-moz-selection { background: #000000; color: #F05A28; }
+
+/* ── Custom Scrollbar (Brutalist: zero border-radius) ── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #000000; }
+::-webkit-scrollbar-thumb { background: #F05A28; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #FF7A4A; }
+::-webkit-scrollbar-corner { background: #000000; }
+* { scrollbar-width: thin; scrollbar-color: #F05A28 #000000; }
+
+/* ── Animations ── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes card-pop-in {
+  0%   { transform: scale(0) rotate(var(--card-rotate, 0deg)); opacity: 0; }
+  70%  { transform: scale(1.04) rotate(var(--card-rotate, 0deg)); opacity: 1; }
+  100% { transform: scale(1) rotate(var(--card-rotate, 0deg)); opacity: 1; }
+}
+@keyframes pixel-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+@keyframes glitch-x {
+  0%,100% { clip-path: inset(0 0 98% 0); transform: translate(-2px, 0); }
+  20%     { clip-path: inset(30% 0 40% 0); transform: translate(2px, 0); }
+  40%     { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 0); }
+  60%     { clip-path: inset(10% 0 60% 0); transform: translate(1px, 0); }
+  80%     { clip-path: inset(50% 0 30% 0); transform: translate(-3px, 0); }
+}
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes ring-spin {
+  from { transform: rotateX(-15deg) rotateY(0deg); }
+  to   { transform: rotateX(-15deg) rotateY(360deg); }
+}
+
+/* ── Utility classes ── */
+.font-display {
+  font-family: 'Archivo Black', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.font-mono-brand {
+  font-family: 'Space Mono', monospace;
+  letter-spacing: -0.02em;
+}
+.animate-marquee         { animation: marquee 22s linear infinite; }
+.animate-marquee-fast    { animation: marquee 10s linear infinite; }
+.animate-marquee-reverse { animation: marquee-reverse 22s linear infinite; }
+.animate-spin-slow       { animation: spin-slow 12s linear infinite; }
+.pixel-blink             { animation: pixel-blink 1s step-end infinite; }
+
+/* card-pop-in with stagger via CSS var */
+.card-pop-in { animation: card-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Brutalist card */
+.brutalist-card        { border: 2px solid rgba(255,255,255,0.15); }
+.brutalist-card-orange { border: 2px solid #F05A28; box-shadow: 4px 4px 0 #F05A28; }
+
+/* Hard offset shadow on hover */
+.hard-hover {
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.hard-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 #F05A28;
+}
+.hard-hover:active {
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+
+/* ── 按钮交互效果 ── */
+
+/* neon-btn：3D 场景右侧楼层控制按钮 */
+.neon-btn {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+  user-select: none;
+}
+.neon-btn:hover {
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.55) !important;
+  background: rgba(255,255,255,0.08) !important;
+  transform: translateY(-2px);
+}
+.neon-btn:active {
+  transform: translateY(0px) scale(0.96);
+  box-shadow: none !important;
+  opacity: 0.75;
+}
+
+/* neon-btn-active：激活态（橙色） */
+.neon-btn-active {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+  user-select: none;
+}
+.neon-btn-active:hover {
+  background: #FF7A4A !important;
+  border-color: #FF7A4A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(240,90,40,0.5);
+}
+.neon-btn-active:active {
+  transform: translateY(0px) scale(0.96);
+  box-shadow: none !important;
+  opacity: 0.85;
+}
+
+/* orange-btn：橙色 CTA（如 SEND、发布、确认） */
+.orange-btn {
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  user-select: none;
+}
+.orange-btn:hover {
+  background: #FF7A4A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240,90,40,0.45);
+}
+.orange-btn:active {
+  background: #d44418 !important;
+  transform: translateY(0px) scale(0.97);
+  box-shadow: none !important;
+}
+
+/* ghost-btn：幽灵按钮（无填充，有边框） */
+.ghost-btn {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.1s;
+  user-select: none;
+}
+.ghost-btn:hover {
+  color: #F05A28 !important;
+  border-color: #F05A28 !important;
+  background: rgba(240,90,40,0.08) !important;
+  transform: translateY(-2px);
+}
+.ghost-btn:active {
+  transform: translateY(0px) scale(0.96);
+  opacity: 0.75;
+}
+
+/* Scanline overlay */
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  z-index: 1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
