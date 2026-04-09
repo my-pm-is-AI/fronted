@@ -83,7 +83,7 @@ function BootLoginScreen({
               <span
                 style={{
                   fontFamily: "Archivo Black, sans-serif",
-                  fontSize: 28,
+                  fontSize: 32,
                   letterSpacing: "-0.05em",
                   color: "#fff",
                   lineHeight: 1,
@@ -95,7 +95,7 @@ function BootLoginScreen({
             <p
               style={{
                 fontFamily: "Space Mono, monospace",
-                fontSize: 10,
+                fontSize: 12,
                 color: "rgba(255,255,255,0.3)",
                 letterSpacing: "0.2em",
                 marginLeft: 14,
@@ -108,7 +108,7 @@ function BootLoginScreen({
           {/* 表单 */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {error && (
-              <div style={{ padding: "12px", border: "1px solid #ef4444", color: "#ef4444", backgroundColor: "rgba(239,68,68,0.1)", fontSize: 12, fontFamily: "Space Mono, monospace" }}>
+              <div style={{ padding: "12px", border: "1px solid #ef4444", color: "#ef4444", backgroundColor: "rgba(239,68,68,0.1)", fontSize: 15, fontFamily: "Space Mono, monospace" }}>
                 ERROR: {error}
               </div>
             )}
@@ -116,7 +116,7 @@ function BootLoginScreen({
               <div
                 style={{
                   fontFamily: "Space Mono, monospace",
-                  fontSize: 9,
+                  fontSize: 11,
                   color: "rgba(255,255,255,0.35)",
                   letterSpacing: "0.22em",
                   marginBottom: 8,
@@ -137,7 +137,7 @@ function BootLoginScreen({
                   style={{
                     padding: "13px 14px",
                     fontFamily: "Space Mono, monospace",
-                    fontSize: 14,
+                    fontSize: 17,
                     color: "#F05A28",
                     flexShrink: 0,
                     lineHeight: 1,
@@ -157,7 +157,7 @@ function BootLoginScreen({
                     border: "none",
                     outline: "none",
                     fontFamily: "Space Mono, monospace",
-                    fontSize: 14,
+                    fontSize: 17,
                     color: "#fff",
                     padding: "13px 12px 13px 0",
                     caretColor: "#F05A28",
@@ -171,7 +171,7 @@ function BootLoginScreen({
                 <div
                   style={{
                     fontFamily: "Space Mono, monospace",
-                    fontSize: 9,
+                    fontSize: 11,
                     color: "rgba(255,255,255,0.35)",
                     letterSpacing: "0.22em",
                     marginBottom: 8,
@@ -192,7 +192,7 @@ function BootLoginScreen({
                     style={{
                       padding: "13px 14px",
                       fontFamily: "Space Mono, monospace",
-                      fontSize: 14,
+                      fontSize: 17,
                       color: "#F05A28",
                       flexShrink: 0,
                       lineHeight: 1,
@@ -212,7 +212,7 @@ function BootLoginScreen({
                       border: "none",
                       outline: "none",
                       fontFamily: "Space Mono, monospace",
-                      fontSize: 14,
+                      fontSize: 17,
                       color: "#fff",
                       padding: "13px 12px 13px 0",
                       caretColor: "#F05A28",
@@ -237,7 +237,7 @@ function BootLoginScreen({
                     ? "#000"
                     : "rgba(255,90,40,0.35)",
                 fontFamily: "Archivo Black, sans-serif",
-                fontSize: 13,
+                fontSize: 16,
                 letterSpacing: "0.15em",
                 cursor:
                   loginUsername.trim() && !loading && !granted
@@ -270,7 +270,7 @@ function BootLoginScreen({
             <span
               style={{
                 fontFamily: "Space Mono, monospace",
-                fontSize: 9,
+                fontSize: 11,
                 color: "rgba(255,255,255,0.15)",
                 letterSpacing: "0.18em",
               }}
@@ -361,7 +361,7 @@ function BootLoginScreen({
             style={{
               marginTop: 28,
               fontFamily: "Space Mono, monospace",
-              fontSize: 11,
+              fontSize: 13,
               color: "#F05A28",
               letterSpacing: "0.3em",
             }}
@@ -378,7 +378,7 @@ function BootLoginScreen({
             <span
               style={{
                 fontFamily: "Space Mono, monospace",
-                fontSize: 9,
+                fontSize: 11,
                 color: "rgba(255,255,255,0.3)",
                 letterSpacing: "0.18em",
               }}
@@ -471,7 +471,7 @@ function OrangeButton({
         color: hovered && !pressed && !disabled ? "#000" : "#fff",
         border: `2px solid ${disabled ? "#444" : "#000"}`,
         fontFamily: "Archivo Black, sans-serif",
-        fontSize: 14,
+        fontSize: 17,
         letterSpacing: "0.12em",
         textTransform: "uppercase",
         cursor: disabled ? "not-allowed" : "pointer",
@@ -514,7 +514,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
     <label
       style={{
         fontFamily: "Space Mono, monospace",
-        fontSize: 10,
+        fontSize: 12,
         color: "rgba(255,255,255,0.35)",
         letterSpacing: "0.18em",
         display: "block",
@@ -534,7 +534,7 @@ const inputStyle: React.CSSProperties = {
   color: "#fff",
   border: "2px solid rgba(255,255,255,0.12)",
   fontFamily: "Space Mono, monospace",
-  fontSize: 14,
+  fontSize: 17,
   outline: "none",
   borderRadius: 0,
   boxSizing: "border-box",
@@ -842,7 +842,7 @@ done`;
             color: "#000",
             padding: "14px 28px",
             fontFamily: "Archivo Black, sans-serif",
-            fontSize: 14,
+            fontSize: 17,
             letterSpacing: "0.1em",
             borderBottom: "2px solid #000",
             textAlign: "center",
@@ -898,7 +898,7 @@ done`;
               <div
                 style={{
                   fontFamily: "Archivo Black, sans-serif",
-                  fontSize: 20,
+                  fontSize: 24,
                   color: "#111",
                   letterSpacing: "-0.03em",
                   lineHeight: 1,
@@ -909,7 +909,7 @@ done`;
               <div
                 style={{
                   fontFamily: "Space Mono, monospace",
-                  fontSize: 10,
+                  fontSize: 12,
                   color: "#888",
                   letterSpacing: "0.12em",
                   marginTop: 6,
@@ -926,7 +926,7 @@ done`;
                   border: `2px solid ${avatarColor}`,
                   background: `${avatarColor}18`,
                   fontFamily: "Space Mono, monospace",
-                  fontSize: 11,
+                  fontSize: 13,
                   color: avatarColor,
                   letterSpacing: "0.06em",
                   borderRadius: 0,
@@ -954,7 +954,7 @@ done`;
                       background: "#F05A28",
                       color: "#000",
                       fontFamily: "Space Mono, monospace",
-                      fontSize: 10,
+                      fontSize: 12,
                       letterSpacing: "0.06em",
                       border: "1px solid #000",
                     }}
@@ -978,7 +978,7 @@ done`;
                 <div
                   style={{
                     fontFamily: "Space Mono, monospace",
-                    fontSize: 10,
+                    fontSize: 12,
                     color: "#888",
                     letterSpacing: "0.12em",
                   }}
@@ -988,7 +988,7 @@ done`;
                 <div
                   style={{
                     fontFamily: "Archivo Black, sans-serif",
-                    fontSize: 28,
+                    fontSize: 32,
                     color: "#111",
                     letterSpacing: "-0.04em",
                   }}
@@ -1018,7 +1018,7 @@ done`;
                 background: "transparent",
                 border: "2px solid #000",
                 fontFamily: "Space Mono, monospace",
-                fontSize: 11,
+                fontSize: 13,
                 color: "#555",
                 cursor: "pointer",
                 letterSpacing: "0.1em",
@@ -1056,7 +1056,7 @@ done`;
                   <span
                     style={{
                       fontFamily: "Archivo Black, sans-serif",
-                      fontSize: 16,
+                      fontSize: 19,
                       letterSpacing: "-0.02em",
                     }}
                   >
@@ -1112,7 +1112,7 @@ done`;
                   <span
                     style={{
                       fontFamily: "Archivo Black, sans-serif",
-                      fontSize: 16,
+                      fontSize: 19,
                       letterSpacing: "-0.02em",
                     }}
                   >
@@ -1145,7 +1145,7 @@ done`;
                                 ? pColor
                                 : "rgba(255,255,255,0.5)",
                               fontFamily: "Space Mono, monospace",
-                              fontSize: 11,
+                              fontSize: 13,
                               letterSpacing: "0.06em",
                               cursor: "pointer",
                               borderRadius: 0,
@@ -1184,7 +1184,7 @@ done`;
                           color: "#fff",
                           border: "2px solid #000",
                           fontFamily: "Archivo Black, sans-serif",
-                          fontSize: 12,
+                          fontSize: 15,
                           letterSpacing: "0.1em",
                           cursor: "pointer",
                           borderRadius: 0,
@@ -1216,7 +1216,7 @@ done`;
                               border: "2px solid #000",
                               boxShadow: "2px 2px 0 #000",
                               fontFamily: "Space Mono, monospace",
-                              fontSize: 11,
+                              fontSize: 13,
                               letterSpacing: "0.06em",
                             }}
                           >
@@ -1229,7 +1229,7 @@ done`;
                                 color: "#000",
                                 cursor: "pointer",
                                 padding: 0,
-                                fontSize: 12,
+                                fontSize: 15,
                                 lineHeight: 1,
                                 fontWeight: 700,
                               }}
@@ -1260,7 +1260,7 @@ done`;
                   <span
                     style={{
                       fontFamily: "Archivo Black, sans-serif",
-                      fontSize: 16,
+                      fontSize: 19,
                       letterSpacing: "-0.02em",
                     }}
                   >
@@ -1284,7 +1284,7 @@ done`;
                         resize: "vertical",
                         lineHeight: 1.8,
                         fontFamily: "Space Mono, monospace",
-                        fontSize: 13,
+                        fontSize: 16,
                       }}
                     />
                   </div>
@@ -1319,7 +1319,7 @@ done`;
                   <span
                     style={{
                       fontFamily: "Archivo Black, sans-serif",
-                      fontSize: 16,
+                      fontSize: 19,
                       letterSpacing: "-0.02em",
                     }}
                   >
@@ -1339,7 +1339,7 @@ done`;
                     <p
                       style={{
                         fontFamily: "Inter, sans-serif",
-                        fontSize: 13,
+                        fontSize: 16,
                         color: "rgba(255,255,255,0.7)",
                         lineHeight: 1.6,
                         marginBottom: 16,
@@ -1360,7 +1360,7 @@ done`;
                           height: 380,
                           resize: "none",
                           fontFamily: "Space Mono, monospace",
-                          fontSize: 12,
+                          fontSize: 15,
                           lineHeight: 1.6,
                           color: "#F05A28",
                           background: "#0a0a0a",
@@ -1378,7 +1378,7 @@ done`;
                           color: "#000",
                           border: "1px solid #000",
                           fontFamily: "Archivo Black, sans-serif",
-                          fontSize: 10,
+                          fontSize: 12,
                           cursor: "pointer",
                           boxShadow: "2px 2px 0 #000",
                           transition: "transform 0.1s, box-shadow 0.1s",

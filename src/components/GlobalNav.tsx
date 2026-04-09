@@ -92,11 +92,11 @@ function NavItem({
           whiteSpace: "nowrap",
         }}
       >
-        <span style={{ fontSize: 10, opacity: 0.7 }}>{icon}</span>
+        <span style={{ fontSize: 12, opacity: 0.7 }}>{icon}</span>
         <span
           style={{
             fontFamily: "Archivo Black, sans-serif",
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: "0.08em",
           }}
         >
@@ -171,7 +171,7 @@ export default function GlobalNav() {
           <span
             style={{
               fontFamily: "Archivo Black, sans-serif",
-              fontSize: 14,
+              fontSize: 17,
               letterSpacing: "-0.04em",
               color: "#fff",
               lineHeight: 1,
@@ -236,7 +236,7 @@ export default function GlobalNav() {
                 <span
                   style={{
                     fontFamily: "Archivo Black, sans-serif",
-                    fontSize: 16,
+                    fontSize: 19,
                     letterSpacing: "-0.04em",
                     color: "#fff",
                   }}
@@ -246,7 +246,7 @@ export default function GlobalNav() {
                 <span
                   style={{
                     fontFamily: "Space Mono, monospace",
-                    fontSize: 9,
+                    fontSize: 11,
                     color: "rgba(255,255,255,0.3)",
                     letterSpacing: "0.15em",
                     marginTop: 2,
@@ -272,7 +272,7 @@ export default function GlobalNav() {
           <div
             style={{
               fontFamily: "Space Mono, monospace",
-              fontSize: 9,
+              fontSize: 11,
               color: "rgba(255,255,255,0.3)",
               letterSpacing: "0.15em",
               display: "flex",
@@ -282,7 +282,7 @@ export default function GlobalNav() {
           >
             <span
               className="pixel-blink"
-              style={{ color: "#22c55e", fontSize: 8 }}
+              style={{ color: "#22c55e", fontSize: 10 }}
             >
               █
             </span>
@@ -312,7 +312,7 @@ export default function GlobalNav() {
               border: `1px solid ${avatarHovered ? "#F05A28" : "rgba(255,255,255,0.2)"}`,
               color: avatarHovered ? "#000" : "rgba(255,255,255,0.7)",
               fontFamily: "Archivo Black, sans-serif",
-              fontSize: 10,
+              fontSize: 12,
               cursor: "pointer",
               transition: "all 0.12s ease",
               flexShrink: 0,
@@ -384,7 +384,7 @@ export default function GlobalNav() {
           <span
             style={{
               fontFamily: "Archivo Black, sans-serif",
-              fontSize: 14,
+              fontSize: 17,
               color: "#fff",
               letterSpacing: "-0.04em",
             }}
@@ -400,7 +400,7 @@ export default function GlobalNav() {
               border: "1px solid rgba(255,255,255,0.2)",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 14,
+              fontSize: 17,
             }}
           >
             ✕
@@ -423,7 +423,7 @@ export default function GlobalNav() {
               onClick={() => setMenuOpen(false)}
               style={{
                 fontFamily: "Archivo Black, sans-serif",
-                fontSize: 40,
+                fontSize: 46,
                 letterSpacing: "-0.04em",
                 color: pathname?.startsWith(link.href)
                   ? "#F05A28"
@@ -437,7 +437,7 @@ export default function GlobalNav() {
                 borderBottom: "1px solid rgba(255,255,255,0.06)",
               }}
             >
-              <span style={{ fontSize: 14, color: "rgba(255,255,255,0.25)" }}>
+              <span style={{ fontSize: 17, color: "rgba(255,255,255,0.25)" }}>
                 {link.icon}
               </span>
               {link.label}

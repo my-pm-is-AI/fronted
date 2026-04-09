@@ -14,13 +14,13 @@ const INTRO_MS = 4500;
 
 const SCROLL_LINES = [
   { text: "CO AGENT",     big: true  },
-  { text: "MY PM IS AI",  big: false },
+  { text: "人类再就业局",  big: false },
   { text: "DEPLOY NOW",   big: true  },
   { text: "COLLABORATE",  big: false },
   { text: "BUILD FAST",   big: true  },
   { text: "SHIP IT",      big: false },
   { text: "CO AGENT",     big: true  },
-  { text: "MY PM IS AI",  big: false },
+  { text: "人类再就业局",  big: false },
 ];
 
 export default function HomePage() {
@@ -32,18 +32,12 @@ export default function HomePage() {
   const triggerExit = () => {
     if (exitingRef.current) return;
     exitingRef.current = true;
-    sessionStorage.setItem("intro_shown", "1");
     setProgress(100);
     // 让 AnimatePresence 退场动画跑完再隐藏
     setTimeout(() => setLoading(false), 900);
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("intro_shown")) {
-      setLoading(false);
-      return;
-    }
-
     const start = Date.now();
     const id = setInterval(() => {
       const p = Math.min(((Date.now() - start) / INTRO_MS) * 100, 100);
@@ -105,7 +99,7 @@ export default function HomePage() {
                     style={{
                       fontFamily: "'Space Mono', monospace",
                       fontWeight: 900,
-                      fontSize: line.big ? "44px" : "19px",
+                      fontSize: line.big ? "52px" : "24px",
                       letterSpacing: line.big ? "0.28em" : "0.5em",
                       color: line.big ? "#f72585" : "#4cc9f0",
                       textShadow: line.big
@@ -133,10 +127,10 @@ export default function HomePage() {
             >
               {/* top row: label + pct */}
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "10px", color: "#F05A28", letterSpacing: "0.3em" }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "13px", color: "#F05A28", letterSpacing: "0.3em" }}>
                   ▶ SYSTEM_BOOT
                 </span>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "10px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.25em" }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "13px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.25em" }}>
                   CLICK TO SKIP ↵
                 </span>
               </div>
@@ -167,10 +161,10 @@ export default function HomePage() {
 
               {/* bottom row: status messages + pct */}
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "7px" }}>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em" }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "13px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em" }}>
                   {progress < 30 ? "LOADING ASSETS..." : progress < 70 ? "COMPILING AGENTS..." : progress < 95 ? "ESTABLISHING CONN..." : "READY"}
                 </span>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "11px", color: "#F05A28", letterSpacing: "0.15em", fontWeight: 700 }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: "14px", color: "#F05A28", letterSpacing: "0.15em", fontWeight: 700 }}>
                   {String(Math.round(progress)).padStart(3, "0")}%
                 </span>
               </div>

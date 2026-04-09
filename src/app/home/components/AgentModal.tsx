@@ -90,7 +90,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                   borderRadius: 999,
                   border: "1px solid rgba(255,255,255,0.15)",
                   padding: "5px 16px",
-                  fontSize: 9,
+                  fontSize: 11,
                   fontFamily: "'Archivo Black', sans-serif",
                   textTransform: "uppercase",
                   letterSpacing: "0.2em",
@@ -103,7 +103,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                 {/* Sub-label */}
                 <p style={{
                   marginTop: 10,
-                  fontSize: 11,
+                  fontSize: 13,
                   fontFamily: "'Archivo Black', sans-serif",
                   textTransform: "uppercase",
                   letterSpacing: "0.15em",
@@ -150,7 +150,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                     border: "none",
                     color: "rgba(255,255,255,0.4)",
                     cursor: "pointer",
-                    fontSize: 17,
+                    fontSize: 20,
                     lineHeight: 1,
                     borderRadius: "50%",
                     transition: "color 0.15s, background 0.15s",
@@ -171,7 +171,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                 {/* Title — 角色名（白色，优雅衬线感） */}
                 <h2 style={{
                   fontFamily: "'Archivo Black', sans-serif",
-                  fontSize: 30,
+                  fontSize: 36,
                   letterSpacing: "-0.02em",
                   color: "#ffffff",
                   lineHeight: 1,
@@ -183,7 +183,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                 {/* Sub-label */}
                 <span style={{
                   fontFamily: "'Archivo Black', sans-serif",
-                  fontSize: 11,
+                  fontSize: 13,
                   textTransform: "uppercase",
                   letterSpacing: "0.15em",
                   color: agent.color,
@@ -197,7 +197,7 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
                   {agent.description.split("\n\n").map((p, i) => (
                     <p key={i} style={{
-                      fontSize: 13.5,
+                      fontSize: 16.5,
                       lineHeight: 1.7,
                       color: "rgba(255,255,255,0.55)",
                       margin: 0,
@@ -207,35 +207,6 @@ export default function AgentModal({ agent, onClose }: AgentModalProps) {
                     </p>
                   ))}
                 </div>
-
-                {/* Deploy button — 白色胶囊型 */}
-                <button style={{
-                  marginTop: 24,
-                  width: "100%",
-                  borderRadius: 999,
-                  border: "none",
-                  background: "#ffffff",
-                  padding: "12px 0",
-                  fontSize: 14,
-                  color: "#111",
-                  cursor: "pointer",
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 600,
-                  letterSpacing: "0.02em",
-                  transition: "transform 0.15s, box-shadow 0.15s",
-                  boxShadow: "0 4px 16px rgba(255,255,255,0.1)",
-                }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 24px rgba(255,255,255,0.18)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(255,255,255,0.1)";
-                  }}
-                >
-                  部署 Agent
-                </button>
               </motion.div>
             </div>
           </motion.div>
