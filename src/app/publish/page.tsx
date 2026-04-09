@@ -178,17 +178,29 @@ export default function PublishPage() {
       const id = msgIdRef.current++;
       setMessages(prev => [...prev, { id, role: 'ai', content: '', typing: true }]);
       let full = '';
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(l => l.trim().startsWith('data:'));
-        for (const line of lines) {
+        buffer += decoder.decode(value, { stream: true });
+        
+        let newlineIndex;
+        let isDone = false;
+        
+        while ((newlineIndex = buffer.indexOf('\n')) >= 0) {
+          const line = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+          
+          if (!line.startsWith('data:')) continue;
+          
+          const dataStr = line.replace(/^data:\s*/, '').trim();
+          if (dataStr === '[DONE]') {
+            isDone = true;
+            break;
+          }
+          
           try {
-            const dataStr = line.replace(/^data:\s*/, '').trim();
-            if (dataStr === '[DONE]') continue;
-            
             const data = JSON.parse(dataStr);
             const token = data.content ?? data.text ?? data.delta ?? '';
             if (token) {
@@ -206,6 +218,7 @@ export default function PublishPage() {
             }
           } catch { /* skip */ }
         }
+        if (isDone) break;
       }
       setMessages(prev => prev.map(m => m.id === id ? { ...m, typing: false } : m));
       setIsTyping(false);
