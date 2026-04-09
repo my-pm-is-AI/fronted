@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ── Car Intro: 3D scroll text (infinite loop) ── */
+@keyframes scrollText {
+  from { transform: rotateX(35deg) translateY(75%); }
+  to   { transform: rotateX(35deg) translateY(-320%); }
+}
+
 :root {
   --background: #000000;
   --foreground: #ffffff;

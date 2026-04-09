@@ -52,7 +52,7 @@ export default function ProjectsPage() {
         }
       }
     } catch (err) {
-      console.error("Failed to fetch projects", err);
+      console.warn("[projects] API unreachable, running in offline mode.", err);
     } finally {
       setLoading(false);
     }
