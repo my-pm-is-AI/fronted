@@ -168,7 +168,8 @@ export default function SettlementPage({ params }: { params: Promise<{ id: strin
     setLoading(true);
     try {
       const token = localStorage.getItem('token') || '';
-      const r = await fetch(`http://120.78.126.163/api/v1/project/${id}/progress`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const r = await fetch(`${apiUrl}/api/v1/project/${id}/progress`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const raw = await r.json();
