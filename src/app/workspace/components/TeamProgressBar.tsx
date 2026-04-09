@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TeamMember {
   id: string;
@@ -175,6 +175,62 @@ function TeamCard({ member }: { member: TeamMember }) {
 }
 
 export default function TeamProgressBar() {
+  const [team, setTeam] = useState<TeamMember[]>(TEAM);
+
+  useEffect(() => {
+    const fetchTeamProgress = async () => {
+      try {
+        const token = localStorage.getItem('token') || '';
+        const projectIdStr = window.location.pathname.split('/').pop();
+        const projectId = projectIdStr ? parseInt(projectIdStr, 10) : 1;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+        // Fetch tasks / members
+        const res = await fetch(`${apiUrl}/api/v1/project/${projectId}/tasks`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const members = data.data?.members || [];
+          const todos = data.data?.todos || [];
+
+          if (members.length > 0) {
+            const mappedTeam: TeamMember[] = members.map((m: any, idx: number) => {
+              const memberTodos = todos.filter((t: any) => t.role === m.role);
+              const total = memberTodos.length;
+              const done = memberTodos.filter((t: any) => t.status === 'done').length;
+              const progress = total > 0 ? Math.round((done / total) * 100) : Math.floor(Math.random() * 60) + 10; // mock if no specific progress
+              
+              const colors = ['#5189fb', '#22c55e', '#F05A28', '#cc44aa', '#4cc9f0'];
+              const color = colors[idx % colors.length];
+              
+              let currentTask = memberTodos.find((t: any) => t.status !== 'done')?.content || '正在处理分配的任务...';
+
+              return {
+                id: m.id.toString(),
+                name: m.name,
+                initials: m.name.substring(0, 2).toUpperCase(),
+                role: m.role,
+                phase: `PHASE ${idx + 1} · DEV`,
+                phaseColor: color,
+                progress: progress,
+                status: progress === 100 ? 'DONE' : 'RUNNING',
+                preview: currentTask,
+                rotate: (Math.random() - 0.5) * 4,
+                delay: idx * 60
+              };
+            });
+            setTeam(mappedTeam);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    
+    fetchTeamProgress();
+  }, []);
+
   return (
     <div
       className='shrink-0'
@@ -191,7 +247,7 @@ export default function TeamProgressBar() {
               fontFamily: 'Archivo Black, sans-serif', textTransform: 'uppercase',
               fontSize: 10, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.22em',
             }}>
-              AGENTS ONLINE &nbsp;✦&nbsp; TEAM PROGRESS &nbsp;✦&nbsp; {TEAM.length} MEMBERS ACTIVE &nbsp;✦&nbsp; HACKATHON 2026 &nbsp;✦&nbsp; BUILD · CODE · SHIP &nbsp;✦&nbsp; ALL SYSTEMS GO &nbsp;✦&nbsp;&nbsp;
+              AGENTS ONLINE &nbsp;✦&nbsp; TEAM PROGRESS &nbsp;✦&nbsp; {team.length} MEMBERS ACTIVE &nbsp;✦&nbsp; HACKATHON 2026 &nbsp;✦&nbsp; BUILD · CODE · SHIP &nbsp;✦&nbsp; ALL SYSTEMS GO &nbsp;✦&nbsp;&nbsp;
             </span>
           ))}
         </div>
@@ -206,7 +262,7 @@ export default function TeamProgressBar() {
           alignItems: 'flex-start',
         }}
       >
-        {TEAM.map(member => <TeamCard key={member.id} member={member} />)}
+        {team.map(member => <TeamCard key={member.id} member={member} />)}
 
         {/* 末尾占位 */}
         <div style={{ width: 1, flexShrink: 0 }} />

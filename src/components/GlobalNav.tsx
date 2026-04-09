@@ -5,12 +5,16 @@ import { useState } from 'react';
 
 const NAV_LINKS = [
   { href: '/publish',    label: 'PUBLISH',    icon: '✦' },
+  { href: '/square',     label: 'SQUARE',     icon: '⊞' },
+  { href: '/projects',   label: 'PROJECTS',   icon: '▤' },
   { href: '/workspace',  label: 'WORKSPACE',  icon: '⬡' },
   { href: '/profile',    label: 'PROFILE',    icon: '◈' },
 ];
 
 const PAGE_META: Record<string, { label: string; sub: string }> = {
   '/publish':    { label: 'PUBLISH',    sub: 'NEW PROJECT' },
+  '/square':     { label: 'SQUARE',     sub: 'REQUIREMENT MARKET' },
+  '/projects':   { label: 'PROJECTS',   sub: 'MY HISTORY' },
   '/workspace':  { label: 'WORKSPACE',  sub: 'AGENT PLATFORM' },
   '/profile':    { label: 'PROFILE',    sub: 'USER SETTINGS' },
   '/settlement': { label: 'SETTLEMENT', sub: 'PROJECT REPORT' },

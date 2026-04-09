@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useFrame, useThree, ThreeEvent } from '@react-three/fiber';
 import { Text, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
+import { handleAgentClick } from '../index';
 
 interface PixelPersonProps {
   position?: [number, number, number];
@@ -44,6 +45,7 @@ export default function PixelPerson({
     const dz = camera.position.z - position[2];
     targetRotY.current = Math.atan2(dx, dz);
     setFacingCamera(true);
+    handleAgentClick(displayName);
   };
 
   useFrame(({ clock }) => {
@@ -89,8 +91,14 @@ export default function PixelPerson({
       rotation={rotation}
       onClick={handleClick}
       // 鼠标悬停时改变光标
-      onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
-      onPointerOut={()  => { document.body.style.cursor = 'auto'; }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'auto';
+      }}
     >
       {/* 裤子 */}
       <mesh position={[0, pantsY, 0]} castShadow>
