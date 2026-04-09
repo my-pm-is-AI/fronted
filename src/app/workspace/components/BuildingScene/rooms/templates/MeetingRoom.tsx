@@ -16,6 +16,7 @@ interface AgentAppearance {
   shirtColor?: string;
   pantsColor?: string;
   skinColor?: string;
+  name?: string;
 }
 
 interface MeetingRoomProps {
@@ -35,7 +36,7 @@ const DEFAULT_AGENTS: AgentAppearance[] = [
   { hairColor: '#6a2010', shirtColor: '#a0c8ff', pantsColor: '#0f0e2a' },
 ];
 
-export default function MeetingRoom({ agents = DEFAULT_AGENTS }: MeetingRoomProps) {
+export default function MeetingRoom({ agents = DEFAULT_AGENTS, agentName }: MeetingRoomProps) {
   const screenRef = useRef<THREE.MeshStandardMaterial>(null);
   const visibleAgents = agents.slice(0, 4);
 
@@ -290,6 +291,7 @@ export default function MeetingRoom({ agents = DEFAULT_AGENTS }: MeetingRoomProp
           shirtColor={agent.shirtColor ?? '#4cc9f0'}
           pantsColor={agent.pantsColor ?? '#0a0a1e'}
           skinColor={agent.skinColor}
+          name={i === 0 && agentName ? agentName : agent.name}
           phaseOffset={AGENT_SLOTS[i].phaseOffset}
         />
       ))}

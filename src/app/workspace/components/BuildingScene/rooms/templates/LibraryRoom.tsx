@@ -18,10 +18,12 @@ interface AgentAppearance {
   shirtColor?: string;
   pantsColor?: string;
   skinColor?: string;
+  name?: string;
 }
 
 interface LibraryRoomProps {
   agents?: AgentAppearance[];
+  agentName?: string;
 }
 
 const AGENT_SLOTS = [
@@ -35,7 +37,7 @@ const DEFAULT_AGENTS: AgentAppearance[] = [
   { hairColor: '#111111', shirtColor: '#cc44aa', pantsColor: '#1a0f1a', skinColor: '#f5cba7' },
 ];
 
-export default function LibraryRoom({ agents = DEFAULT_AGENTS }: LibraryRoomProps) {
+export default function LibraryRoom({ agents = DEFAULT_AGENTS, agentName }: LibraryRoomProps) {
   const visibleAgents = agents.slice(0, 4);
 
   return (
@@ -117,6 +119,7 @@ export default function LibraryRoom({ agents = DEFAULT_AGENTS }: LibraryRoomProp
           shirtColor={agent.shirtColor ?? '#cc44aa'}
           pantsColor={agent.pantsColor ?? '#1a0f1a'}
           skinColor={agent.skinColor}
+          name={i === 0 && agentName ? agentName : agent.name}
           phaseOffset={AGENT_SLOTS[i].phaseOffset}
         />
       ))}

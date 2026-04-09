@@ -191,7 +191,7 @@ export default function ProjectStatus() {
 
       {/* Phase list */}
       <div className='px-3 py-2 space-y-1'>
-        {phases.map(phase => {
+        {phases.map((phase, idx) => {
           const cfg = STATUS[phase.status];
           const isActive = phase.status === 'active';
           const isDone = phase.status === 'done';
@@ -217,7 +217,7 @@ export default function ProjectStatus() {
                   minWidth: 20,
                 }}
               >
-                {String(phase.id).padStart(2, '0')}
+                {String(idx + 1).padStart(2, '0')}
               </span>
 
               {/* Content */}

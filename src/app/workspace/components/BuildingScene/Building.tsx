@@ -73,7 +73,7 @@ export default function Building({ focusedFloor = null, isTransitioning = false,
             isFocused={isFocused}
             isDimmed={isDimmed}
           >
-            <Room />
+            <Room agentName={personName} />
           </BuildingFloor>
         );
       })}

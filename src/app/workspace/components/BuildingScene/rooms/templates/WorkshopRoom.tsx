@@ -39,7 +39,7 @@ const DEFAULT_AGENTS: AgentAppearance[] = [
   { hairColor: '#c8a020', shirtColor: '#4cc9f0', pantsColor: '#0f1a2e' },
 ];
 
-export default function WorkshopRoom({ agents = DEFAULT_AGENTS }: WorkshopRoomProps) {
+export default function WorkshopRoom({ agents = DEFAULT_AGENTS, agentName }: WorkshopRoomProps) {
   const tvScreenRef = useRef<THREE.MeshStandardMaterial>(null);
   const visibleAgents = agents.slice(0, 4);
 
@@ -165,6 +165,7 @@ export default function WorkshopRoom({ agents = DEFAULT_AGENTS }: WorkshopRoomPr
           shirtColor={agent.shirtColor ?? '#4cc9f0'}
           pantsColor={agent.pantsColor ?? '#0f1a2e'}
           skinColor={agent.skinColor}
+          name={i === 0 && agentName ? agentName : agent.name}
           phaseOffset={AGENT_SLOTS[i].phaseOffset}
         />
       ))}

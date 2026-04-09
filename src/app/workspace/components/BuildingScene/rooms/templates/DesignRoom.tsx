@@ -17,10 +17,12 @@ interface AgentAppearance {
   shirtColor?: string;
   pantsColor?: string;
   skinColor?: string;
+  name?: string;
 }
 
 interface DesignRoomProps {
   agents?: AgentAppearance[];
+  agentName?: string;
 }
 
 const AGENT_SLOTS = [
@@ -35,7 +37,7 @@ const DEFAULT_AGENTS: AgentAppearance[] = [
   { hairColor: '#3344cc', shirtColor: '#ff9966', pantsColor: '#0f0f1a' },
 ];
 
-export default function DesignRoom({ agents = DEFAULT_AGENTS }: DesignRoomProps) {
+export default function DesignRoom({ agents = DEFAULT_AGENTS, agentName }: DesignRoomProps) {
   const visibleAgents = agents.slice(0, 4);
 
   return (
@@ -146,6 +148,7 @@ export default function DesignRoom({ agents = DEFAULT_AGENTS }: DesignRoomProps)
           shirtColor={agent.shirtColor ?? '#F05A28'}
           pantsColor={agent.pantsColor ?? '#1a0a10'}
           skinColor={agent.skinColor}
+          name={i === 0 && agentName ? agentName : agent.name}
           phaseOffset={AGENT_SLOTS[i].phaseOffset}
         />
       ))}

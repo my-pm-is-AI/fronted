@@ -25,7 +25,7 @@ export { DevRoom, WorkshopRoom, LibraryRoom, DesignRoom, MeetingRoom };
 export type RoomType = 'dev' | 'workshop' | 'library' | 'design' | 'meeting';
 
 export const ROOM_TEMPLATES: Record<RoomType, {
-  component: React.ComponentType<{ agents?: { hairColor?: string; shirtColor?: string; pantsColor?: string; skinColor?: string }[] }>;
+  component: React.ComponentType<{ agents?: { hairColor?: string; shirtColor?: string; pantsColor?: string; skinColor?: string; name?: string }[]; agentName?: string }>;
   label: string;
   icon: string;
   color: string;

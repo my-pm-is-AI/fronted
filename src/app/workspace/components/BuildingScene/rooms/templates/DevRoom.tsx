@@ -18,10 +18,12 @@ interface AgentAppearance {
   shirtColor?: string;
   pantsColor?: string;
   skinColor?: string;
+  name?: string;
 }
 
 interface DevRoomProps {
   agents?: AgentAppearance[];
+  agentName?: string;
 }
 
 // 预设站位 & 朝向（最多4人）
@@ -38,7 +40,7 @@ const DEFAULT_AGENTS: AgentAppearance[] = [
   { hairColor: '#5c3317', shirtColor: '#7b2fe8', pantsColor: '#0f0e1a' },
 ];
 
-export default function DevRoom({ agents = DEFAULT_AGENTS }: DevRoomProps) {
+export default function DevRoom({ agents = DEFAULT_AGENTS, agentName }: DevRoomProps) {
   const visibleAgents = agents.slice(0, 4);
 
   return (
@@ -59,6 +61,7 @@ export default function DevRoom({ agents = DEFAULT_AGENTS }: DevRoomProps) {
           shirtColor={agent.shirtColor ?? '#5189fb'}
           pantsColor={agent.pantsColor ?? '#1a1a2e'}
           skinColor={agent.skinColor}
+          name={i === 0 && agentName ? agentName : agent.name}
           phaseOffset={AGENT_SLOTS[i].phaseOffset}
         />
       ))}
