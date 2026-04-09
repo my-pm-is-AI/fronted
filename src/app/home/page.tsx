@@ -71,7 +71,7 @@ export default function HomePage() {
               <CarScene />
             </div>
 
-            {/* 3D Scrolling Text — sun center (infinite loop) */}
+            {/* 3D Scrolling Text — sun center (static) */}
             <div
               className="absolute pointer-events-none"
               style={{
@@ -84,16 +84,15 @@ export default function HomePage() {
                 overflow: "hidden",
               }}
             >
-              {/* duplicate lines so loop feels seamless */}
               <div
-                className="animate-scroll-text"
                 style={{
                   transformOrigin: "50% 100%",
+                  // transform: "rotateX(35deg) translateY(20%)", // 静态的倾斜效果，模拟马路延伸感
                   textAlign: "center",
                   paddingTop: "20px",
                 }}
               >
-                {[...SCROLL_LINES, ...SCROLL_LINES].map((line, i) => (
+                {SCROLL_LINES.map((line, i) => (
                   <div
                     key={i}
                     style={{
