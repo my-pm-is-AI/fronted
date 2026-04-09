@@ -17,18 +17,6 @@ export default function HeroSection({
     <section className="relative mx-auto flex w-full flex-col items-center justify-between gap-8 px-6 pt-4 pb-4 md:px-16 md:pt-8 lg:flex-row lg:px-24 min-h-[calc(100vh-80px)]">
       {/* Left Content */}
       <div className="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left">
-        {/* Eyebrow Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-white/50">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-            面向全球的 Agent&Human 协作基础设施
-          </span>
-        </motion.div>
-
         {/* Main Title */}
         <motion.h1
           className="mt-6 max-w-5xl text-5xl leading-[1.15] tracking-tight text-white md:text-7xl lg:text-[5.5rem]"

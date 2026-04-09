@@ -158,33 +158,90 @@ export default function AgentChat() {
 
   // 监听 3D 场景中点击 Agent 的事件
   useEffect(() => {
-    const handleAgentClicked = (e: any) => {
+    const handleAgentClicked = async (e: any) => {
       const agentName = e.detail.agentName;
       if (!agentName) return;
 
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          role: 'user',
-          content: `你现在的进度怎么样了？遇到什么问题了吗？ (@${agentName})`,
-          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
+      const msgContent = `你现在的进度怎么样了？遇到什么问题了吗？ (@${agentName})`;
+      const userMsg: Message = {
+        id: Date.now(),
+        role: 'user',
+        content: msgContent,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      };
+      
+      setMessages(prev => [...prev, userMsg]);
       setIsTyping(true);
 
-      setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            role: 'agent',
-            content: `你好！我是 ${agentName}。我目前的进度一切正常，已经完成了 80% 的任务分配。\n目前暂时没有遇到阻塞问题，正在继续执行...`,
-            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      // 调用后端对话接口
+      try {
+        const token = localStorage.getItem('token') || '';
+        const projectIdStr = window.location.pathname.split('/').pop();
+        const projectId = projectIdStr ? parseInt(projectIdStr, 10) : 1;
+        const memberId = 1; 
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const res = await fetch(`${apiUrl}/api/v1/project/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ project_id: projectId, member_id: memberId, message: userMsg.content }),
+        });
+
+        if (!res.ok || !res.body) throw new Error('SSE failed');
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        const id = Date.now() + 1;
+        setMessages(prev => [...prev, { id, role: 'agent', content: '', time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }]);
+        let full = '';
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          
+          let newlineIndex;
+          let isDone = false;
+          
+          while ((newlineIndex = buffer.indexOf('\n')) >= 0) {
+            const line = buffer.slice(0, newlineIndex).trim();
+            buffer = buffer.slice(newlineIndex + 1);
+            
+            if (!line.startsWith('data:')) continue;
+            
+            const dataStr = line.replace(/^data:\s*/, '').trim();
+            if (dataStr === '[DONE]') {
+              isDone = true;
+              break;
+            }
+            
+            try {
+              const data = JSON.parse(dataStr);
+              const tokenStr = data.content ?? data.text ?? data.delta ?? '';
+              if (tokenStr) {
+                full += tokenStr;
+                setMessages(prev => prev.map(m => m.id === id ? { ...m, content: full } : m));
+              }
+            } catch { /* skip */ }
           }
-        ]);
+          if (isDone) break;
+        }
         setIsTyping(false);
-      }, 1500);
+      } catch {
+        // 降级 mock
+        setTimeout(() => {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 1,
+              role: 'agent',
+              content: `你好！我是 ${agentName}。我目前的进度一切正常，已经完成了部分任务。\n目前暂时没有遇到阻塞问题，正在继续执行...`,
+              time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+          setIsTyping(false);
+        }, 1500);
+      }
     };
 
     window.addEventListener('AGENT_CLICKED', handleAgentClicked);
@@ -243,9 +300,9 @@ export default function AgentChat() {
           
           try {
             const data = JSON.parse(dataStr);
-            const token = data.content ?? data.text ?? data.delta ?? '';
-            if (token) {
-              full += token;
+            const tokenStr = data.content ?? data.text ?? data.delta ?? '';
+            if (tokenStr) {
+              full += tokenStr;
               setMessages(prev => prev.map(m => m.id === id ? { ...m, content: full } : m));
             }
           } catch { /* skip */ }

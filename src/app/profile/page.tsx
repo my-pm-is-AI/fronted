@@ -298,7 +298,7 @@ function BootLoginScreen({
           tint="#FF6600"
           mouseReact={false}
           brightness={0.8}
-          style={{ position: "absolute", inset: 0, opacity: 0.5 }}
+          style={{ position: "absolute", inset: 0, opacity: 0.85 }}
         />
         <div
           style={{
@@ -319,7 +319,7 @@ function BootLoginScreen({
             justifyContent: "center",
             padding: "0 10%",
             zIndex: 2,
-            opacity: granted ? 1 : 0,
+            opacity: 1,
             transform: granted ? "translateY(0)" : "translateY(24px)",
             transition: "opacity 0.6s ease, transform 0.6s ease",
             pointerEvents: "none",
@@ -340,11 +340,10 @@ function BootLoginScreen({
               letterSpacing: "-0.05em",
               lineHeight: 0.88,
               color: "#F05A28",
-              textShadow:
-                "0 0 40px rgba(255,100,0,0.7), 0 0 100px rgba(255,100,0,0.35)",
+              textShadow: granted ? "0 0 40px rgba(255,100,0,0.7), 0 0 100px rgba(255,100,0,0.35)" : "none",
             }}
           >
-            ACCESS
+            {granted ? "ACCESS" : "SYSTEM"}
           </div>
           <div
             style={{
@@ -355,7 +354,7 @@ function BootLoginScreen({
               color: "#fff",
             }}
           >
-            GRANTED
+            {granted ? "GRANTED" : "LOCKED"}
           </div>
           <div
             style={{
@@ -366,7 +365,7 @@ function BootLoginScreen({
               letterSpacing: "0.3em",
             }}
           >
-            WELCOME TO THE AGENT ENVIRONMENT
+            {granted ? "WELCOME TO THE AGENT ENVIRONMENT" : "AWAITING AUTHORIZATION PROTOCOL"}
           </div>
           <div
             style={{
@@ -383,7 +382,7 @@ function BootLoginScreen({
                 letterSpacing: "0.18em",
               }}
             >
-              SYSTEM NOMINAL · ALL MODULES ACTIVE
+              {granted ? "SYSTEM NOMINAL · ALL MODULES ACTIVE" : "RESTRICTED AREA · IDENTIFY YOURSELF"}
             </span>
           </div>
         </div>
